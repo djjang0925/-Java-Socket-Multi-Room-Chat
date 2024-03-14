@@ -37,7 +37,7 @@ public class Main {
                     String command = in2.readLine();
 
                     if (!command.equals("y") && !command.equals("n")) {
-                        System.out.println("[client] 잘못된 커맨드입니다. 다시 입력해주세요.");
+                        System.out.println("[Client] 잘못된 커맨드입니다. 다시 입력해주세요.");
                     } else {
                         out.writeUTF(command);
                         System.out.print(in.readUTF());
@@ -45,6 +45,24 @@ public class Main {
                         out.writeUTF(in2.readLine());
                         System.out.println(in.readUTF());
                         break;
+                    }
+                }
+            } else /* 방이 존재하는 경우 */ {
+                System.out.print(in.readUTF());
+
+                while (true) {
+                    out.writeUTF(in2.readLine());
+
+                    // 방 생성 커맨드를 입력한 경우
+                    if (in.readUTF().equals("create")) {
+                        System.out.print(in.readUTF());
+
+                        out.writeUTF(in2.readLine());
+                        System.out.println(in.readUTF());
+                        break;
+                    } else /* 방에 참가하는 경우 */ {
+                        break;
+                        // 잘못된 커맨드 처리 필요
                     }
                 }
             }
@@ -60,6 +78,7 @@ public class Main {
                 String roomMessage = in.readUTF();
                 System.out.println(roomMessage);
             }
-        } catch (IOException e) {}
+        } catch (IOException e) {
+        }
     }
 }

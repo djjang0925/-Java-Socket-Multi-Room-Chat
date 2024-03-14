@@ -27,7 +27,11 @@ public class RoomManager {
 
             if (!roomsList.isEmpty()) {
                 for (int i = 1; i < roomsList.size() + 1; i++) {
-                    sb.append(i).append(". ").append(roomsList.get(i - 1)).append("\n");
+                    if (i != roomsList.size()) {
+                        sb.append(i).append(". ").append(roomsList.get(i - 1)).append("\n");
+                    } else {
+                        sb.append(i).append(" .").append(roomsList.get(i - 1));
+                    }
                 }
                 String res = sb.toString();
                 out.writeUTF("[Server] 방목록" + "\n" + res);
@@ -52,13 +56,34 @@ public class RoomManager {
                 String res = in.readUTF();
 
                 if (res.equals("y")) {
-//                    out.writeUTF("[server] y");
                     roomCreate();
                 } else {
                     out.writeUTF("[Server] n");
                 }
             } else {
+                out.writeBoolean(true);
+                out.writeUTF("[Server] 방 생성(c) / 방 참가(방 번호): ");
 
+                String res = in.readUTF();
+
+                if (res.equals("c")) {
+                    out.writeUTF("create");
+                    roomCreate();
+                } else {
+                    out.writeUTF("join");
+
+                    int index = Integer.parseInt(res) - 1;
+
+                    if (index < 0 || index > roomsList.size()) {
+                        out.writeBoolean(false);
+                        out.writeUTF("[Server] 옳바른 방 번호를 입력해 주세요.");
+                        index = Integer.parseInt(in.readUTF()) - 1;
+                    }
+//                    out.writeBoolean(true);
+                    String roomName = roomsList.get(index);
+                    Room room = rooms.get(roomName);
+                    room.joinUser(userName, socket);
+                }
             }
         } catch (IOException e) {
         }
@@ -77,7 +102,8 @@ public class RoomManager {
             out.writeUTF("[Server] " + name + "방이 성공적으로 생성되었습니다.");
 
             room.joinUser(userName, socket);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
 
     public Room roomInfo() {
